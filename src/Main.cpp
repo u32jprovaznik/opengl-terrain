@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "Utils/Macroneq.hpp"
+
 // Constants
 const unsigned int WINDOW_WIDTH  = 800;
 const unsigned int WINDOW_HEIGHT = 600;
@@ -71,6 +73,59 @@ int main()
   // Callbacks
   glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
+  // Shaders
+  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+  const char* vertexShaderSource = mrq::file::getContents("src/Shaders/default.vert");
+  const char* fragmentShaderSource = mrq::file::getContents("src/Shaders/default.frag");
+
+  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+  glCompileShader(vertexShader);
+  glCompileShader(fragmentShader);
+
+  // Info Log
+  int success;
+  char infoLog[512];
+
+  // Validating the Vertex Shader
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+  if (!success)
+  {
+    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+    std::cerr << "Failed to compile the vertex shader!" << std::endl;
+    std::cerr << "Error: " << infoLog << std::endl;
+  }
+
+  // Validating the Fragment Shader
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+  if (!success)
+  {
+    glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+    std::cerr << "Failed to compile the fragment shader!" << std::endl;
+    std::cerr << "Error: " << infoLog << std::endl;
+  }
+
+  // Shader Program
+  GLuint shaderProgram = glCreateProgram();
+  glAttachShader(shaderProgram, vertexShader);
+  glAttachShader(shaderProgram, fragmentShader);
+  glLinkProgram(shaderProgram);
+
+  // Validating the Shader Program
+  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+  if (!success)
+  {
+    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+    std::cerr << "Failed to link the shader program!" << std::endl;
+    std::cerr << "Error: " << infoLog << std::endl;
+  }
+
+  // Deleting the Shaders
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
+
   // VAO, VBO and EBO
   GLuint VAO;
   GLuint VBO;
@@ -99,7 +154,9 @@ int main()
   {
     glfwPollEvents();
     glClear(GL_COLOR_BUFFER_BIT);
+    glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
     glfwSwapBuffers(window);
   }
 
@@ -108,6 +165,7 @@ int main()
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
+  glDeleteProgram(shaderProgram);
   return 0;
 }
 

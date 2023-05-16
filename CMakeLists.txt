@@ -20,6 +20,8 @@ find_package(glfw3 REQUIRED)
 add_executable(
   ${PROJECT_NAME}
   src/Main.cpp
+  src/Utils/Macroneq.cpp
+  src/Utils/Macroneq.hpp
 )
 target_link_directories(${PROJECT_NAME} PUBLIC src)
 target_link_libraries(${PROJECT_NAME} PUBLIC GL GLEW glfw)
