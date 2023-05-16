@@ -20,6 +20,8 @@ find_package(glfw3 REQUIRED)
 add_executable(
   ${PROJECT_NAME}
   src/Main.cpp
+  src/Classes/Shader.cpp
+  src/Headers/Shader.hpp
   src/Utils/Macroneq.cpp
   src/Utils/Macroneq.hpp
 )
