@@ -21,9 +21,11 @@ add_executable(
   ${PROJECT_NAME}
   src/Main.cpp
   src/Classes/Shader.cpp
+  src/Classes/VAO.cpp
   src/Classes/VBO.cpp
   src/Classes/EBO.cpp
   src/Headers/Shader.hpp
+  src/Headers/VAO.hpp
   src/Headers/VBO.hpp
   src/Headers/EBO.hpp
   src/Utils/Macroneq.cpp

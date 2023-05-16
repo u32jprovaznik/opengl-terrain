@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Headers/Shader.hpp"
+#include "Headers/VAO.hpp"
 #include "Headers/VBO.hpp"
 #include "Headers/EBO.hpp"
 #include "Utils/Macroneq.hpp"
@@ -80,20 +81,17 @@ int main()
   Shader shaderProgram("src/Shaders/default.vert", "src/Shaders/default.frag");
 
   // VAO, VBO and EBO
-  GLuint VAO;
+  VAO VAO1;
   VBO VBO1(vertices, sizeof(vertices));
   EBO EBO1(indices, sizeof(indices));
 
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-
+  VAO1.Bind();
   VBO1.Bind();
   EBO1.Bind();
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-  glEnableVertexAttribArray(0);
+  VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 0, (void*)0);
 
-  glBindVertexArray(0);
+  VAO1.Unbind();
   VBO1.Unbind();
   EBO1.Unbind();
 
@@ -102,15 +100,17 @@ int main()
   {
     glfwPollEvents();
     glClear(GL_COLOR_BUFFER_BIT);
+
     shaderProgram.Activate();
-    glBindVertexArray(VAO);
+    VAO1.Bind();
     glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+
     glfwSwapBuffers(window);
   }
 
   // Terminating the Program
   glfwTerminate();
-  glDeleteVertexArrays(1, &VAO);
+  VAO1.Delete();
   VBO1.Delete();
   EBO1.Delete();
   shaderProgram.Delete();
